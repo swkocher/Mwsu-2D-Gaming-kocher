@@ -53,4 +53,8 @@ var menuState = {
 }
 		game.state.start('play');   
     },
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> c5b708c802bff351359d9c1e91fe00141febd701

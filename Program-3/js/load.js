@@ -29,4 +29,8 @@ var loadState = {
     create: function() { 
         game.state.start('menu');
     }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> c5b708c802bff351359d9c1e91fe00141febd701
