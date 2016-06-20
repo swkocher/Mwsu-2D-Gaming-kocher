@@ -34,14 +34,14 @@ SpaceHipster.Game.prototype = {
     this.player.body.maxVelocity.set(200);
 	
 	//  Our bullet group
-    this.bullets = this.game.add.group();
-    this.bullets.enableBody = true;
-    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    this.bullets.createMultiple(30, 'bullet');
-    this.bullets.setAll('anchor.x', 0.5);
-    this.bullets.setAll('anchor.y', 1);
-    this.bullets.setAll('outOfBoundsKill', true);
-    this.bullets.setAll('checkWorldBounds', true);
+    bullets = this.game.add.group();
+    bullets.enableBody = true;
+    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    bullets.createMultiple(30, 'bullet');
+    bullets.setAll('anchor.x', 0.5);
+    bullets.setAll('anchor.y', 1);
+    bullets.setAll('outOfBoundsKill', true);
+    bullets.setAll('checkWorldBounds', true);
 
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
@@ -86,38 +86,40 @@ SpaceHipster.Game.prototype = {
 		this.player.body.angularVelocity = 0;
 	}
 	
-	/* //  Firing?
+	//  Firing?
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
     {
-        fireBullet();
+        this.fireBullet();
     }
 	
-	function fireBullet () {
-		
-		bulletTime = this.game.time.events.add(Phaser.Timer.SECOND, fireBullet, this);
-		if(this.game.time.now > bulletTime)
-		{
-			bullet = bullets.getFirstExists(false);
-
-			if (bullet)
-			{
-				bullet.reset(player.body.x + 16, player.body.y + 16);
-				bullet.lifespan = 2000;
-				bullet.rotation = sprite.rotation;
-				game.physics.arcade.velocityFromRotation(player.rotation, 400, bullet.body.velocity);
-				bulletTime = game.time.now + 50;
-			}
-		}
-	} */
-
 	
-
+	
     //collision between player and asteroids
     this.game.physics.arcade.collide(this.player, this.asteroids, this.hitAsteroid, null, this);
 	
     //overlapping between player and collectables
     this.game.physics.arcade.overlap(this.player, this.collectables, this.collect, null, this);
   },
+  
+  fireBullet: function () {
+	if(this.game.time.now > bulletTime)
+	{
+		bullet = bullets.getFirstExists(false);
+
+		if (bullet)
+		{
+			bullet.reset(this.player.body.x + 50, this.player.body.y + 48);
+			bullet.lifespan = 2000;
+			bullet.rotation = this.player.rotation;
+			this.game.physics.arcade.velocityFromRotation(this.player.rotation, 400, bullet.body.velocity);
+			
+			//collision between bullets and asteroids
+			this.game.physics.arcade.collide(this.bullets, this.asteroids, this.shootAsteroid, null, this);
+			bulletTime = this.game.time.now + 50;
+		}
+	}
+  },
+  
   generateCollectables: function() {
     this.collectables = this.game.add.group();
 
@@ -288,6 +290,18 @@ SpaceHipster.Game.prototype = {
 
     this.game.time.events.add(800, this.gameOver, this);
   },
+  
+  shootAsteroid: function(bullet, asteroid){
+	var emitter = this.game.add.emitter(this.asteroid.x, this.asteroid.y, 100);
+    emitter.makeParticles('playerParticle');
+    emitter.minParticleSpeed.setTo(-200, -200);
+    emitter.maxParticleSpeed.setTo(200, 200);
+    emitter.gravity = 0;
+    emitter.start(true, 1000, null, 100);
+    this.asteroid.kill();
+	this.bullet.kill();
+  },
+  
   gameOver: function() {    
     //pass it the score as a parameter 
     this.game.state.start('MainMenu', true, false, this.playerScore);
