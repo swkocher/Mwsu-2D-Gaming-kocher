@@ -20,8 +20,9 @@ SpaceHipster.Game.prototype = {
 
     //create player
     this.player = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'playership');
-    this.player.anchor.set(0.5);
-	this.player.scale.setTo(0.45);
+    this.player.scale.setTo(0.45);
+	this.player.anchor.set(0.5);
+	
 
     //player initial score of zero
     this.playerScore = 0;
@@ -33,15 +34,24 @@ SpaceHipster.Game.prototype = {
 	this.player.body.drag.set(100);
     this.player.body.maxVelocity.set(200);
 	
-	//  Our bullet group
-    bullets = this.game.add.group();
-    bullets.enableBody = true;
-    bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(30, 'bullet');
-    bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 1);
-    bullets.setAll('outOfBoundsKill', true);
-    bullets.setAll('checkWorldBounds', true);
+	
+	
+	  this.bullets = this.game.add.group();
+    this.bullets.enableBody = true;
+    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+
+    for (var i = 0; i < 20; i++)
+    {
+        var b = this.bullets.create(0, 0, 'bullet');
+        b.name = 'bullet' + i;
+        b.exists = false;
+        b.visible = false;
+        b.checkWorldBounds = true;
+        b.events.onOutOfBounds.add(this.resetBullet, this);
+    }
+	
+	
+	
 
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
@@ -92,7 +102,8 @@ SpaceHipster.Game.prototype = {
         this.fireBullet();
     }
 	
-	
+	//collision between bullets and asteroids
+	this.game.physics.arcade.overlap(this.bullets, this.asteroids, this.shootAsteroid, null, this);
 	
     //collision between player and asteroids
     this.game.physics.arcade.collide(this.player, this.asteroids, this.hitAsteroid, null, this);
@@ -104,7 +115,7 @@ SpaceHipster.Game.prototype = {
   fireBullet: function () {
 	if(this.game.time.now > bulletTime)
 	{
-		bullet = bullets.getFirstExists(false);
+		bullet = this.bullets.getFirstExists(false);
 
 		if (bullet)
 		{
@@ -113,8 +124,7 @@ SpaceHipster.Game.prototype = {
 			bullet.rotation = this.player.rotation;
 			this.game.physics.arcade.velocityFromRotation(this.player.rotation, 400, bullet.body.velocity);
 			
-			//collision between bullets and asteroids
-			this.game.physics.arcade.collide(this.bullets, this.asteroids, this.shootAsteroid, null, this);
+			
 			bulletTime = this.game.time.now + 50;
 		}
 	}
@@ -150,9 +160,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(16/42);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-280, -260);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-80, 80);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 13 && randomInt <= 25)
 	  {
@@ -160,9 +168,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(9/21);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(260, 280);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-80, 80);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 26 && randomInt <= 38)
 	  {
@@ -170,9 +176,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(12/21);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-240, 240);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-270, -250);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 39 && randomInt <= 50)
 	  {
@@ -180,9 +184,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(15/21);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-200, -220);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(200, 220);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 51 && randomInt <= 60)
 	  {
@@ -190,9 +192,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(1);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(150, 280);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-260, 180);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 61 && randomInt <= 70)
 	  {
@@ -200,9 +200,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(1.6);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-140, 300);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-380, 380);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 71 && randomInt <= 78)
 	  {
@@ -210,9 +208,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(2);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(140, 260);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-300, 380);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 71 && randomInt <= 85)
 	  {
@@ -220,9 +216,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(2.3);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-400, 300);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-390, 200);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 86 && randomInt <= 93)
 	  {
@@ -230,9 +224,7 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(2.6);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-300, 310);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-300, 322);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
+		
 	  }
 	  else if(randomInt >= 94 && randomInt <= 100)
 	  {
@@ -240,10 +232,10 @@ SpaceHipster.Game.prototype = {
         asteroid.scale.setTo(3);
 		asteroid.body.velocity.x = this.game.rnd.integerInRange(-400, 400);
 	    asteroid.body.velocity.y = this.game.rnd.integerInRange(-50, 50);
-		asteroid.body.immovable = true;
-        asteroid.body.collideWorldBounds = true;
-		asteroid.body.bounce.setTo(0.9, 0.9);
 	  }
+	  asteroid.body.immovable = true;
+	  asteroid.body.collideWorldBounds = true;
+	  asteroid.body.bounce.setTo(0.9, 0.9);
   },
   //Creates a random number of asteroids, bounded by difficulty
   generateAsteriods: function() {
@@ -290,17 +282,23 @@ SpaceHipster.Game.prototype = {
 
     this.game.time.events.add(800, this.gameOver, this);
   },
-  
-  shootAsteroid: function(bullet, asteroid){
-	var emitter = this.game.add.emitter(this.asteroid.x, this.asteroid.y, 100);
+  //destroy asteroid and bullet that collides with the asteroid
+  shootAsteroid: function(bullets, asteroid){
+	var emitter = this.game.add.emitter(asteroid.x, asteroid.y, 100);
     emitter.makeParticles('playerParticle');
     emitter.minParticleSpeed.setTo(-200, -200);
     emitter.maxParticleSpeed.setTo(200, 200);
     emitter.gravity = 0;
     emitter.start(true, 1000, null, 100);
-    this.asteroid.kill();
-	this.bullet.kill();
+    asteroid.kill();
+	bullets.kill();
+	console.log(this.asteroid);
   },
+   resetBullet: function (bullet) {
+
+    bullet.kill();
+
+},
   
   gameOver: function() {    
     //pass it the score as a parameter 

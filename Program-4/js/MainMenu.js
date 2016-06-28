@@ -18,7 +18,7 @@ SpaceHipster.MainMenu.prototype = {
     this.background.autoScroll(-20, 0);
 
     //start game text
-    var text = "Tap to begin";
+    var text = "Tap to begin please";
     var style = { font: "30px Arial", fill: "#fff", align: "center" };
     var t = this.game.add.text(this.game.width/2, this.game.height/2, text, style);
     t.anchor.set(0.5);
